@@ -14,7 +14,7 @@ services:
       - key: LLM_PROVIDER
         value: gemini
       - key: LLM_MODEL
-        value: gemini-3.7-flash
+        value: gemini-3.5-flash
       - key: LLM_MODE
         value: live
       - key: RIME_MODEL
@@ -34,6 +34,12 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
       - key: GOOGLE_REDIRECT_URI
-        sync: false
+        value: https://voxa-cvsr.onrender.com/api/auth/google/callback
+      - key: BACKEND_URL
+        value: https://voxa-cvsr.onrender.com
+      - key: FRONTEND_URL
+        value: https://voxa-cvsr.onrender.com
+      - key: VOXA_BACKEND_URL
+        value: https://voxa-cvsr.onrender.com
       - key: SESSION_SECRET
         generateValue: true

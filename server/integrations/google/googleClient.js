@@ -29,6 +29,7 @@ class GoogleClientManager {
 
   _initClient() {
     const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const backendUrl = process.env.BACKEND_URL || process.env.VOXA_BACKEND_URL || process.env.RENDER_EXTERNAL_URL || (process.env.NODE_ENV === 'production' ? 'https://voxa-cvsr.onrender.com' : 'http://localhost:3000');
     const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${backendUrl}/api/auth/google/callback`;
 
