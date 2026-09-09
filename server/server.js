@@ -345,6 +345,16 @@ app.post('/api/cancel', (req, res) => {
   });
 });
 
+// ── Public Legal & Compliance Routes (Google OAuth verification) ───────────
+
+app.get(['/privacy-policy', '/privacy'], (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'privacy-policy.html'));
+});
+
+app.get(['/terms', '/terms-of-service'], (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'terms.html'));
+});
+
 // ── Fallback: serve index.html for client-side routing ───────────────────────
 
 app.get('*', (req, res) => {

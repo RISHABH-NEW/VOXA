@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — VOXA Adaptive Voice AI</title>
+  <meta name="description" content="Privacy Policy for VOXA Adaptive Voice AI. Explains how voice data, Google Calendar, Google Classroom, Gmail, and browser actions are processed securely and with minimal retention.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="legal-page">
+  <div class="app">
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="header">
+      <div class="header-brand">
+        <a href="/" class="brand-link" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
+          <div class="logo-wrapper">
+            <span class="logo-mark">◈</span>
+            <span class="logo">VOXA</span>
+          </div>
+          <span class="subtitle">Adaptive Voice AI</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <a href="/" class="btn btn-secondary-nav" style="text-decoration:none;">
+          ← Back to VOXA
+        </a>
+      </div>
+    </header>
+
+    <!-- ── Main Legal Container ────────────────────────────── -->
+    <main class="legal-main">
+      <div class="legal-container">
+        <!-- Document Title Badge -->
+        <div class="legal-header">
+          <div class="legal-badge">Legal &amp; Compliance</div>
+          <h1 class="legal-title">Privacy Policy</h1>
+          <p class="legal-effective">Last updated: September 9, 2026 · Effective immediately</p>
+          <p class="legal-tagline">"Speak. Interrupt. Adapt."</p>
+        </div>
+
+        <!-- Content Body -->
+        <article class="legal-content">
+          <!-- 1. Introduction -->
+          <section id="introduction" class="legal-section">
+            <h2>1. Introduction</h2>
+            <p>
+              Welcome to <strong>VOXA</strong> ("VOXA," "we," "us," or "our"), an adaptive, voice-first AI assistant designed to streamline student daily digital workflows. VOXA enables users to interact through spoken natural language, seamlessly connect essential academic services—including Google Calendar, Google Classroom, and Gmail—and perform safe browser companion actions via the VOXA Chrome Extension.
+            </p>
+            <p>
+              We respect your privacy and are committed to transparency. This Privacy Policy outlines what information we process, how that data is used to provide requested features, how we safeguard your information, and how you maintain complete control over your accounts and permissions.
+            </p>
+            <div class="callout callout-info">
+              <strong>Core Privacy Principle:</strong> VOXA only requests the minimal read-only permissions required to answer your voice questions and coordinate your schedule. We do not sell your personal data, nor do we use your personal content to train public AI models.
+            </div>
+          </section>
+
+          <!-- 2. Information We Collect -->
+          <section id="information-collected" class="legal-section">
+            <h2>2. Information We Collect</h2>
+            <p>VOXA collects and processes information strictly necessary to fulfill your spoken voice requests and integration workflows:</p>
+            <ul>
+              <li><strong>Voice and Speech Input:</strong> Spoken commands captured through your browser's microphone when voice recognition is activated.</li>
+              <li><strong>Connected Account Identifiers:</strong> Your Google user email address used to identify connected state and display authenticated badges.</li>
+              <li><strong>Academic and Schedule Data:</strong> Calendar events, Classroom courses, coursework titles, and recent email metadata retrieved in response to your explicit voice queries.</li>
+              <li><strong>Browser Companion Context:</strong> Active tab URLs and page titles reported by the VOXA Chrome Extension to support browser navigation actions.</li>
+              <li><strong>Technical Session Diagnostics:</strong> Ephemeral latency timestamps, request IDs, and connection health states utilized to manage sub-second voice interruption and recovery.</li>
+            </ul>
+          </section>
+
+          <!-- 3. Voice and Speech Data -->
+          <section id="voice-speech-data" class="legal-section">
+            <h2>3. Voice and Speech Data</h2>
+            <p>
+              VOXA uses the browser's built-in Web Speech API (speech-to-text) to capture audio locally in your browser. Audio streams are converted to text queries on the client side:
+            </p>
+            <ul>
+              <li>VOXA does <strong>not</strong> record or store raw ambient audio recordings on our servers.</li>
+              <li>Voice input is processed only when you explicitly start a session via <strong>"Start Talking"</strong> or the spacebar shortcut.</li>
+              <li>Microphone capture immediately pauses or stops when you click <strong>"Stop Voice"</strong>, navigate away, or close the application.</li>
+              <li>Synthesized spoken responses returned to you are streamed as binary audio (<code>audio/mpeg</code>) generated in real time through Rime TTS.</li>
+            </ul>
+          </section>
+
+          <!-- 4. Google Account Data -->
+          <section id="google-account-data" class="legal-section">
+            <h2>4. Google Account Data</h2>
+            <p>
+              When you choose to link your Google account to VOXA, you authorize access via Google's official OAuth 2.0 consent screen. We only request read-only scopes necessary to summarize your academic day:
+            </p>
+            <ul>
+              <li><code>https://www.googleapis.com/auth/userinfo.email</code> — Used solely to verify identity and display your connected account email address in the dashboard.</li>
+            </ul>
+            <p>
+              We do not request write access to your Google account, nor do we request access to your Google passwords. Your login occurs directly on Google's secure authentication servers.
+            </p>
+          </section>
+
+          <!-- 5. Google Calendar Data -->
+          <section id="google-calendar-data" class="legal-section">
+            <h2>5. Google Calendar Data</h2>
+            <p>
+              Under scope <code>https://www.googleapis.com/auth/calendar.readonly</code>:
+            </p>
+            <ul>
+              <li>VOXA reads scheduled event summaries, start/end timestamps, locations, and descriptions.</li>
+              <li>Calendar data is fetched on-demand when you ask schedule questions (e.g., <em>"What do I have tomorrow?"</em> or <em>"What is my next meeting?"</em>).</li>
+              <li>We do not create, modify, delete, or share your calendar entries.</li>
+            </ul>
+          </section>
+
+          <!-- 6. Google Classroom Data -->
+          <section id="google-classroom-data" class="legal-section">
+            <h2>6. Google Classroom Data</h2>
+            <p>
+              Under scopes <code>https://www.googleapis.com/auth/classroom.courses.readonly</code> and <code>https://www.googleapis.com/auth/classroom.coursework.me.readonly</code>:
+            </p>
+            <ul>
+              <li>VOXA queries enrolled courses, assignment names, due dates, and submission statuses.</li>
+              <li>This enables VOXA to answer voice inquiries like <em>"Any assignments due this week?"</em> or provide direct links when you say <em>"Open my physics homework."</em></li>
+              <li>VOXA cannot submit assignments, change grades, or alter coursework.</li>
+            </ul>
+          </section>
+
+          <!-- 7. Gmail Data -->
+          <section id="gmail-data" class="legal-section">
+            <h2>7. Gmail Data</h2>
+            <p>
+              Under scope <code>https://www.googleapis.com/auth/gmail.readonly</code>:
+            </p>
+            <ul>
+              <li>VOXA reads recent email headers (sender, subject line, date) and brief snippets to summarize your inbox when you ask (e.g., <em>"Do I have any important emails?"</em>).</li>
+              <li>VOXA does not read attachment files, does not download your full email archive, and cannot draft, send, archive, or delete emails.</li>
+              <li>Email summaries are processed ephemerally in server memory during your query and are not permanently archived in external databases.</li>
+            </ul>
+          </section>
+
+          <!-- 8. Chrome Extension Data -->
+          <section id="chrome-extension-data" class="legal-section">
+            <h2>8. Chrome Extension Data</h2>
+            <p>
+              The optional VOXA Companion Chrome Extension operates under Manifest V3:
+            </p>
+            <ul>
+              <li>It maintains a secure local connection to your VOXA instance via Server-Sent Events (SSE) and periodic heartbeats.</li>
+              <li>It queries the active browser tab URL and title strictly to support commands like <em>"What tab is open?"</em> or to bring existing Gmail/Classroom tabs into focus.</li>
+              <li>It executes only predefined safe navigation actions (opening validated <code>https://</code> links to Google services or assignments).</li>
+              <li>The extension blocks unsafe protocols (such as <code>javascript:</code>, <code>file:</code>, or <code>data:</code>) and never transmits your browsing history, keystrokes, or page contents.</li>
+            </ul>
+          </section>
+
+          <!-- 9. How We Use Data -->
+          <section id="how-we-use-data" class="legal-section">
+            <h2>9. How We Use Data</h2>
+            <p>We use the processed information strictly to:</p>
+            <ol>
+              <li>Generate relevant, natural spoken voice answers through our LLM and Rime TTS pipeline.</li>
+              <li>Synthesize cross-service student agendas combining Calendar events and Classroom deadlines.</li>
+              <li>Execute voice-prompted browser navigation (e.g., opening Gmail or assignment URLs in Chrome).</li>
+              <li>Power VOXA's interruption and recovery engine, discarding stale responses when you interrupt.</li>
+              <li>Display accurate service connection statuses in the VOXA dashboard.</li>
+            </ol>
+            <p>We never use or sell personal data for advertising, marketing, profiling, or data brokerage.</p>
+          </section>
+
+          <!-- 10. How We Store Data -->
+          <section id="how-we-store-data" class="legal-section">
+            <h2>10. How We Store Data</h2>
+            <p>
+              OAuth tokens received from Google are stored in a restricted local data file on the hosting server (<code>data/google_tokens.json</code>) with restrictive filesystem permissions. Tokens are used strictly to sign authorized API requests to Google.
+            </p>
+            <p>
+              VOXA does not operate external third-party tracking databases or cross-site analytical trackers. Session states and conversation history are maintained in ephemeral server and browser memory for the duration of your active voice session.
+            </p>
+          </section>
+
+          <!-- 11. Data Security -->
+          <section id="data-security" class="legal-section">
+            <h2>11. Data Security</h2>
+            <p>
+              We implement industry-standard security safeguards to protect your personal data:
+            </p>
+            <ul>
+              <li><strong>HTTPS / TLS Encryption:</strong> All communications between your browser, our servers, Google APIs, and Rime TTS are strictly encrypted in transit using TLS/HTTPS.</li>
+              <li><strong>Server-Side Secret Isolation:</strong> Google client secrets, Rime API keys, and LLM credentials are strictly confined to backend environment variables and are never transmitted to client JavaScript.</li>
+              <li><strong>CORS Whitelisting:</strong> Cross-Origin Resource Sharing is enforced, permitting access only from authorized VOXA origins.</li>
+              <li><strong>Version Control Protection:</strong> All token files, credentials, and environment configurations are excluded from version control systems.</li>
+            </ul>
+          </section>
+
+          <!-- 12. Third-Party Services -->
+          <section id="third-party-services" class="legal-section">
+            <h2>12. Third-Party Services</h2>
+            <p>To deliver our voice assistant features, VOXA interacts with the following trusted third-party providers:</p>
+            <ul>
+              <li><strong>Google APIs (Google LLC):</strong> For Calendar, Classroom, Gmail, and OAuth 2.0 authentication.</li>
+              <li><strong>Rime TTS (Rime Labs Inc.):</strong> For ultra-low-latency neural speech synthesis. Text snippets to be spoken are sent to Rime's synthesis API; Rime returns binary audio (<code>audio/mpeg</code>).</li>
+              <li><strong>Google Gemini / OpenAI:</strong> For conversational natural language understanding and tool orchestration. Spoken queries and relevant retrieved academic snippets are provided to generate friendly spoken answers.</li>
+              <li><strong>Render (Render Services, Inc.):</strong> Cloud hosting platform that provides the secure container infrastructure and HTTPS termination for the VOXA web service.</li>
+            </ul>
+          </section>
+
+          <!-- 13. Google API Data Usage (Limited Use Requirement) -->
+          <section id="google-api-usage" class="legal-section">
+            <h2>13. Google API Data Usage (Limited Use Policy)</h2>
+            <div class="callout callout-important">
+              <p>
+                <strong>Google API Services User Data Policy:</strong><br>
+                VOXA's use and transfer to any other app of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.
+              </p>
+            </div>
+            <p>Specifically:</p>
+            <ul>
+              <li>Google user data is used solely to provide or improve user-facing features prominent in the VOXA interface.</li>
+              <li>We do not transfer Google user data to third parties, unless necessary to provide or improve user-facing features, comply with applicable laws, or as part of a merger/acquisition with explicit consent.</li>
+              <li>We do not use Google user data for serving advertisements, including personalized, re-targeted, or interest-based advertising.</li>
+              <li>We do not permit humans to read Google user data unless we have obtained your affirmative consent for specific messages, it is necessary for security purposes (such as investigating a bug or abuse), or to comply with applicable law.</li>
+            </ul>
+          </section>
+
+          <!-- 14. Data Retention -->
+          <section id="data-retention" class="legal-section">
+            <h2>14. Data Retention</h2>
+            <p>
+              We adhere to minimal data retention practices:
+            </p>
+            <ul>
+              <li><strong>OAuth Refresh Tokens:</strong> Retained on the secure host only as long as your Google account remains connected.</li>
+              <li><strong>Calendar, Classroom &amp; Gmail Content:</strong> Fetched on-demand and retained in temporary volatile memory only for the duration of query execution and conversational turn response. Not permanently archived.</li>
+              <li><strong>Conversation History:</strong> Maintained in client/browser session state and can be immediately wiped at any time using the <strong>"Clear"</strong> button.</li>
+            </ul>
+          </section>
+
+          <!-- 15. User Control and Data Deletion -->
+          <section id="user-control-deletion" class="legal-section">
+            <h2>15. User Control and Data Deletion</h2>
+            <p>You maintain complete authority over your information at all times:</p>
+            <ul>
+              <li><strong>Clear Conversation:</strong> Click the "Clear" button in the conversation panel to erase active transcript records.</li>
+              <li><strong>Revoke Permissions:</strong> You can disconnect your Google account directly within VOXA at any time by clicking <strong>"Disconnect"</strong> in the dashboard.</li>
+              <li><strong>Google Account Permissions Manager:</strong> You can also review and revoke VOXA's access at any time through your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Account Security Permissions</a> page.</li>
+              <li><strong>Data Deletion Requests:</strong> To request complete deletion of any stored tokens or configuration records, contact us using the information below.</li>
+            </ul>
+          </section>
+
+          <!-- 16. Disconnecting Google Account -->
+          <section id="disconnecting-google" class="legal-section">
+            <h2>16. Disconnecting Google Account</h2>
+            <p>
+              When you click <strong>"Disconnect"</strong> in the VOXA dashboard:
+            </p>
+            <ol>
+              <li>VOXA sends an immediate revocation request to Google's token revocation endpoint.</li>
+              <li>All stored access and refresh tokens are permanently unlinked and deleted from local storage (<code>data/google_tokens.json</code>).</li>
+              <li>In-memory authentication credentials are wiped, and integration statuses reset immediately to "Not Connected".</li>
+            </ol>
+          </section>
+
+          <!-- 17. Children's Privacy -->
+          <section id="children-privacy" class="legal-section">
+            <h2>17. Children's Privacy</h2>
+            <p>
+              VOXA is designed as a productivity tool for students and adult learners. We do not knowingly collect personal identifiable information directly from children under the age of 13 without verified parental or institutional consent. If you believe a child under 13 has provided personal data without required consent, please contact us immediately so we can promptly delete the information.
+            </p>
+          </section>
+
+          <!-- 18. Changes to This Policy -->
+          <section id="changes-policy" class="legal-section">
+            <h2>18. Changes to This Policy</h2>
+            <p>
+              We may update this Privacy Policy periodically to reflect enhancements to our features, service integrations, or legal obligations. When updates occur, the "Last updated" date at the top of this document will be revised. We encourage you to review this policy periodically.
+            </p>
+          </section>
+
+          <!-- 19. Contact Information -->
+          <section id="contact-info" class="legal-section">
+            <h2>19. Contact Information</h2>
+            <p>
+              If you have any questions, concerns, or requests regarding this Privacy Policy, your data, or our compliance with Google API policies, please reach out to us:
+            </p>
+            <div class="contact-box">
+              <p><strong>VOXA Developer &amp; Maintainer:</strong> Rishabh Verma</p>
+              <p><strong>Primary Contact Email:</strong> <a href="mailto:rv3475022@gmail.com">rv3475022@gmail.com</a></p>
+              <p><strong>Support &amp; Inquiries:</strong> <a href="mailto:support@voxa.ai">support@voxa.ai</a></p>
+              <p><strong>Project Repository:</strong> <a href="https://github.com/RISHABH-NEW/VOXA" target="_blank" rel="noopener noreferrer">github.com/RISHABH-NEW/VOXA</a></p>
+            </div>
+          </section>
+        </article>
+
+        <!-- Back Link Footer -->
+        <div class="legal-footer-nav">
+          <a href="/" class="btn btn-primary" style="text-decoration:none;">← Return to VOXA Assistant</a>
+          <a href="/terms" class="btn btn-secondary-nav" style="text-decoration:none;">View Terms of Service →</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <footer class="footer">
+      <div class="footer-content">
+        <span>VOXA — Adaptive Voice AI · Voice powered by <strong>Rime TTS</strong></span>
+        <span class="footer-dot">·</span>
+        <span>Built for student workflows</span>
+        <span class="footer-dot">·</span>
+        <span class="footer-badge">Sub-second interruption recovery</span>
+      </div>
+      <div class="footer-links" style="margin-top: 10px;">
+        <a href="/privacy-policy" class="footer-link active" style="color:var(--accent-cyan); font-weight:600;">Privacy Policy</a>
+        <span class="footer-dot">·</span>
+        <a href="/terms" class="footer-link">Terms of Service</a>
+        <span class="footer-dot">·</span>
+        <a href="/" class="footer-link">App Home</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
