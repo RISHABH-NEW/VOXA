@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment (NEVER commit secrets)
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build
+dist/
+build/
+
+# Local data & tokens (NEVER commit tokens)
+data/
+*.tokens.json
+tokens.json

@@ -1,0 +1,28 @@
+{
+  "name": "voxa",
+  "version": "1.0.0",
+  "description": "VOXA — Adaptive Voice AI. Speak. Interrupt. Adapt.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "build": "node -e \"console.log('Build complete (static assets ready)')\"",
+    "test": "node tests/integrations.test.js",
+    "dev": "node --watch --watch-path=.env server/server.js"
+  },
+  "keywords": [
+    "voice",
+    "ai",
+    "rime",
+    "tts",
+    "interruption",
+    "recovery"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "googleapis": "^178.1.1"
+  }
+}

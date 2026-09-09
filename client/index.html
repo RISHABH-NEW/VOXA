@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOXA — Adaptive Voice AI</title>
+  <meta name="description" content="Voxa is an adaptive voice agent that knows when to stop, discard stale responses, and immediately adapt to what you actually said. Powered by Rime TTS.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="header">
+      <div class="header-brand">
+        <h1 class="logo">VOXA</h1>
+        <span class="subtitle">Adaptive Voice AI</span>
+      </div>
+      <div class="header-right">
+        <span class="tagline">Speak. Interrupt. Adapt.</span>
+        <div class="connection-indicator" id="connectionIndicator">
+          <span class="connection-dot"></span>
+          <span class="connection-text" id="connectionText">Connecting…</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main Content ────────────────────────────────────── -->
+    <main class="main-content">
+      <!-- Left: Orb + Controls -->
+      <section class="orb-section">
+        <!-- Status Indicator -->
+        <div class="status-container">
+          <div class="status-badge" id="statusBadge">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">READY</span>
+          </div>
+          <p class="status-detail" id="statusDetail">Press Start Voice to begin</p>
+        </div>
+
+        <!-- Voice Orb -->
+        <div class="orb-container" id="orbContainer">
+          <canvas id="orbCanvas" width="340" height="340"></canvas>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <button class="btn btn-primary" id="btnVoice" aria-label="Start Voice">
+            <span class="btn-icon" id="btnIcon">🎤</span>
+            <span class="btn-text" id="btnText">Start Voice</span>
+          </button>
+          <button class="btn btn-secondary" id="btnInterrupt" disabled aria-label="Interrupt Voxa">
+            <span class="btn-icon">✋</span>
+            <span class="btn-text">Interrupt Voxa</span>
+          </button>
+        </div>
+
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner" hidden>
+          <span class="error-icon">⚠️</span>
+          <span class="error-message" id="errorMessage"></span>
+          <button class="error-close" id="errorClose" aria-label="Dismiss">✕</button>
+        </div>
+
+        <!-- Interim transcript (what user is saying) -->
+        <div class="interim-transcript" id="interimTranscript" hidden>
+          <span class="interim-label">Hearing:</span>
+          <span class="interim-text" id="interimText"></span>
+        </div>
+      </section>
+
+      <!-- Right: Panels -->
+      <aside class="panels">
+        <!-- Conversation Transcript -->
+        <div class="panel panel-transcript">
+          <div class="panel-header">
+            <h2>Conversation</h2>
+            <button class="panel-action" id="btnClearChat" title="Clear conversation">Clear</button>
+          </div>
+          <div class="panel-body transcript-body" id="transcriptBody">
+            <div class="transcript-empty" id="transcriptEmpty">
+              <p>Start a voice session to begin your conversation with Voxa.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voice Activity -->
+        <div class="panel panel-activity" id="activityPanel">
+          <div class="panel-header">
+            <h2>Voice Activity</h2>
+            <span class="activity-request" id="activityRequestId">IDLE</span>
+          </div>
+          <div class="panel-body activity-body">
+            <div class="activity-grid">
+              <div class="activity-card">
+                <span class="activity-label">STATE</span>
+                <span class="activity-badge" id="activityStateBadge">READY</span>
+              </div>
+              <div class="activity-card">
+                <span class="activity-label">SERVICE</span>
+                <span class="activity-val" id="activityService">—</span>
+              </div>
+              <div class="activity-card full-width">
+                <span class="activity-label">ACTION</span>
+                <span class="activity-val" id="activityAction">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connected Services -->
+        <div class="panel panel-integrations">
+          <div class="panel-header" id="integrationsHeader">
+            <h2>Connected Services</h2>
+            <button class="panel-toggle" id="integrationsToggle" aria-label="Toggle integrations">▼</button>
+          </div>
+          <div class="panel-body integrations-body" id="integrationsBody">
+            <!-- Google Services -->
+            <div class="service-card">
+              <div class="service-card-header">
+                <div class="service-title-group">
+                  <span class="service-icon">🌐</span>
+                  <div>
+                    <div class="service-title">Google Account</div>
+                    <div class="service-sub" id="googleUserEmail">Not Connected</div>
+                  </div>
+                </div>
+                <button class="btn btn-connect" id="btnGoogleAuth">Connect</button>
+              </div>
+              <div class="service-list">
+                <div class="service-row">
+                  <span class="service-row-name">Google Calendar</span>
+                  <span class="service-row-status" id="calendarStatus">Not Connected</span>
+                </div>
+                <div class="service-row">
+                  <span class="service-row-name">Google Classroom</span>
+                  <span class="service-row-status" id="classroomStatus">Not Connected</span>
+                </div>
+                <div class="service-row">
+                  <span class="service-row-name">Gmail</span>
+                  <span class="service-row-status" id="gmailStatus">Not Connected</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chrome Extension -->
+            <div class="service-card">
+              <div class="service-card-header">
+                <div class="service-title-group">
+                  <span class="service-icon">🧩</span>
+                  <div>
+                    <div class="service-title">Chrome Extension</div>
+                    <div class="service-sub" id="chromeDetail">Browser Companion</div>
+                  </div>
+                </div>
+                <span class="service-badge" id="chromeStatusBadge">Not Connected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Metrics -->
+        <div class="panel panel-metrics">
+          <div class="panel-header" id="metricsHeader">
+            <h2>Technical Metrics</h2>
+            <button class="panel-toggle" id="metricsToggle" aria-label="Toggle metrics">▼</button>
+          </div>
+          <div class="panel-body metrics-body" id="metricsBody">
+            <!-- Latency Overview Grid -->
+            <div class="metric-group">
+              <h3>Measured Pipeline Latency</h3>
+              <div class="metric-grid-4">
+                <div class="metric-item">
+                  <span class="metric-label">Stop Latency</span>
+                  <span class="metric-value highlight-emerald" id="metricCurrent">—</span>
+                  <span class="metric-sub">Interruption</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Tool Latency</span>
+                  <span class="metric-value" id="metricTool">—</span>
+                  <span class="metric-sub">Google / API</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">LLM Latency</span>
+                  <span class="metric-value" id="metricLlm">—</span>
+                  <span class="metric-sub">Generation</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">TTS Latency</span>
+                  <span class="metric-value" id="metricTts">—</span>
+                  <span class="metric-sub">Rime synthesis</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interruption Statistics -->
+            <div class="metric-group">
+              <h3>Interruption Performance Stats</h3>
+              <div class="metric-grid">
+                <div class="metric-item">
+                  <span class="metric-label">Latest Stop</span>
+                  <span class="metric-value" id="metricStopLatest">—</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Average</span>
+                  <span class="metric-value" id="metricAverage">—</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Min</span>
+                  <span class="metric-value" id="metricMin">—</span>
+                </div>
+                <div class="metric-item">
+                  <span class="metric-label">Max</span>
+                  <span class="metric-value" id="metricMax">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Event Timeline -->
+            <div class="metric-group">
+              <h3>Event Timeline</h3>
+              <div class="timeline-container" id="timelineContainer">
+                <div class="timeline-empty">No events recorded yet</div>
+              </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="metric-group">
+              <h3>System Status</h3>
+              <div class="status-grid" id="systemStatus">
+                <div class="status-item">
+                  <span class="status-item-label">STT</span>
+                  <span class="status-item-value" id="sttStatus">—</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-item-label">LLM</span>
+                  <span class="status-item-value" id="llmStatus">—</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-item-label">Rime TTS</span>
+                  <span class="status-item-value" id="rimeStatus">—</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-item-label">Mode</span>
+                  <span class="status-item-value" id="modeStatus">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo & Testing -->
+        <div class="panel panel-demo">
+          <div class="panel-header" id="demoHeader">
+            <h2>Demo &amp; Testing Suite</h2>
+            <button class="panel-toggle" id="demoToggle" aria-label="Toggle demo">▼</button>
+          </div>
+          <div class="panel-body demo-body" id="demoBody">
+            <!-- Demo Quick Tests -->
+            <div class="demo-suite">
+              <div class="suite-title">Hackathon Test Scenarios</div>
+              <div class="suite-buttons">
+                <button class="btn btn-suite" id="btnTest1">
+                  <span class="suite-badge">TEST 1</span>
+                  <span class="suite-text">"What do I have tomorrow?"</span>
+                </button>
+                <button class="btn btn-suite" id="btnTest2">
+                  <span class="suite-badge">TEST 2</span>
+                  <span class="suite-text">"Do I have any important emails?"</span>
+                </button>
+                <button class="btn btn-suite" id="btnTest3">
+                  <span class="suite-badge">TEST 3</span>
+                  <span class="suite-text">"Open Gmail."</span>
+                </button>
+                <button class="btn btn-suite btn-suite-primary" id="btnTest4">
+                  <span class="suite-badge-primary">TEST 4</span>
+                  <span class="suite-text">⚡ Master Interruption &amp; Adapt Demo</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Demo Checklist -->
+            <div class="checklist" id="demoChecklist">
+              <h3>Interruption Test Checklist</h3>
+              <div class="checklist-items" id="checklistItems">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Stress Test Controls -->
+            <div class="demo-controls">
+              <button class="btn btn-stress" id="btnStressTest">
+                ⚡ RUN AUTOMATED STRESS TEST
+              </button>
+            </div>
+
+            <!-- Stress Test Result -->
+            <div class="stress-result" id="stressResult" hidden>
+              <span class="stress-label" id="stressLabel">STRESS TEST</span>
+              <span class="stress-status" id="stressStatus"></span>
+            </div>
+
+            <!-- Mock Mode Banner -->
+            <div class="mock-banner" id="mockBanner" hidden>
+              <span>⚙️ MOCK/DEVELOPMENT MODE — Not using real LLM</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <footer class="footer">
+      <span>VOXA — Adaptive Voice AI · Powered by <strong>Rime TTS</strong></span>
+      <span class="footer-separator">|</span>
+      <span>Rime Hackathon 2026</span>
+    </footer>
+  </div>
+
+  <!-- ── Scripts ─────────────────────────────────────────── -->
+  <script src="components/state-manager.js"></script>
+  <script src="components/stt.js"></script>
+  <script src="components/audio-player.js"></script>
+  <script src="components/metrics.js"></script>
+  <script src="components/orb.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

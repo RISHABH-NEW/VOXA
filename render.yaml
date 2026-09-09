@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: voxa
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_MODEL
+        value: gemini-3.5-flash
+      - key: LLM_MODE
+        value: live
+      - key: RIME_MODEL
+        value: coda
+      - key: RIME_SPEAKER
+        value: astra
+      - key: RIME_LANGUAGE
+        value: en
+      - key: RIME_ENDPOINT
+        value: https://users.rime.ai/v1/rime-tts
+      - key: RIME_API_KEY
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
