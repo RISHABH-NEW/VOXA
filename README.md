@@ -4,6 +4,11 @@
 
 > Voice agents shouldn't make you wait for them to finish.
 
+- 🌐 **Live Application**: [https://voxa-cvsr.onrender.com/](https://voxa-cvsr.onrender.com/)
+- 🔒 **Privacy Policy**: [https://voxa-cvsr.onrender.com/privacy-policy](https://voxa-cvsr.onrender.com/privacy-policy)
+- 📜 **Terms of Service**: [https://voxa-cvsr.onrender.com/terms](https://voxa-cvsr.onrender.com/terms)
+- 🐙 **GitHub Repository**: [https://github.com/RISHABH-NEW/VOXA](https://github.com/RISHABH-NEW/VOXA)
+
 Voxa is a voice-first AI assistant that interacts with a student's digital workflow across Google Calendar, Google Classroom, Gmail, and browser actions in Chrome.
 
 The core differentiator is **not** simply connecting APIs:
@@ -159,13 +164,14 @@ VOXA uses standard OAuth 2.0 authorization with read-only scopes. Users never sh
    - Click **Create Credentials > OAuth client ID**.
    - Application type: **Web application**.
    - Name: `VOXA Web Client`.
-   - Authorized redirect URIs: `http://localhost:3000/api/auth/google/callback`.
-6. Copy the generated **Client ID** and **Client Secret** into your `.env` file:
+   - Authorized JavaScript origins: `https://voxa-cvsr.onrender.com` (and `http://localhost:3000` for development).
+   - Authorized redirect URIs: `https://voxa-cvsr.onrender.com/api/auth/google/callback` (and `http://localhost:3000/api/auth/google/callback` for development).
+6. Copy the generated **Client ID** and **Client Secret** into your `.env` or Render environment variables:
 
 ```env
 GOOGLE_CLIENT_ID=your_client_id_here
 GOOGLE_CLIENT_SECRET=your_client_secret_here
-GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
+GOOGLE_REDIRECT_URI=https://voxa-cvsr.onrender.com/api/auth/google/callback
 ```
 
 7. Start VOXA, open the dashboard, click **Connect Google**, and grant read-only permissions.
@@ -277,12 +283,19 @@ The dashboard features dedicated quick-action scenario buttons under **Demo & Te
 Run the automated integration and stress test suite:
 
 ```bash
-# Test Google services, Chrome extension, command router, and cancellation
-node tests/integrations.test.js
+# Test Google services, Chrome extension, command router, and cancellation (18 tests)
+npm test
 
-# Test interruption speed, sequential invalidation, and Rime TTS
-node tests/stress-test.js
+# Run 10-attempt sequential interruption stress & latency benchmark
+node tests/interruption-benchmark.js
 ```
+
+### Measured Interruption Benchmark Results:
+- **Total Attempts**: 10 / 10 passed (100% clean invalidation)
+- **Latest Stop Latency**: 21.19 ms
+- **Average Latency**: 57.10 ms
+- **Min Latency**: 18.83 ms
+- **Max Latency**: 366.81 ms
 
 ---
 

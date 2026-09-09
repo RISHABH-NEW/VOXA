@@ -126,9 +126,10 @@
       const data = await res.json();
 
       // Update connection indicator
-      els.connectionDot.classList.toggle('connected', data.status === 'healthy');
-      els.connectionDot.classList.toggle('error', data.status !== 'healthy');
-      els.connectionText.textContent = data.status === 'healthy' ? 'Connected' : 'Degraded';
+      const isHealthy = data.status === 'healthy';
+      els.connectionDot.classList.toggle('connected', isHealthy);
+      els.connectionDot.classList.toggle('error', !isHealthy);
+      els.connectionText.textContent = isHealthy ? 'Ready when you are' : 'Some services need attention';
 
       // Update system status
       updateSystemStatus(data.services);
@@ -567,15 +568,15 @@
       }
 
       console.error('[VOXA] LLM Error:', err.message);
-      showError("I couldn't process that request right now. Please try again.");
+      showError("Sorry, I couldn't process that request. Please try again.");
       setVoiceState('ERROR', 'LLM request failed');
 
       // Add fallback to conversation
-      state.addMessage('assistant', "I couldn't process that request right now. Please try again.", {
+      state.addMessage('assistant', "Sorry, I couldn't process that request. Please try again.", {
         requestId,
         responseType: 'fallback',
       });
-      addTranscriptMessage('assistant', "I couldn't process that request right now. Please try again.", { isFallback: true });
+      addTranscriptMessage('assistant', "Sorry, I couldn't process that request. Please try again.", { isFallback: true });
 
       // Resume listening after error
       setTimeout(() => {
@@ -627,8 +628,8 @@
       }
 
       console.error('[VOXA] Rime TTS Error:', err.message);
-      showError('Voxa generated a response, but voice delivery failed.');
-      setVoiceState('ERROR', 'Voice delivery failed');
+      showError("I couldn't start voice playback.");
+      setVoiceState('ERROR', "I couldn't start voice playback.");
 
       setTimeout(() => {
         if (sessionActive) {
@@ -813,8 +814,8 @@
       els.metricMin.textContent = `${Math.round(stats.min)}ms`;
       els.metricMax.textContent = `${Math.round(stats.max)}ms`;
     } else {
-      els.metricCurrent.textContent = '—';
-      if (els.metricStopLatest) els.metricStopLatest.textContent = '—';
+      els.metricCurrent.textContent = 'No measurements yet';
+      if (els.metricStopLatest) els.metricStopLatest.textContent = 'No measurements yet';
       els.metricAverage.textContent = '—';
       els.metricMin.textContent = '—';
       els.metricMax.textContent = '—';

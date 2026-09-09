@@ -230,7 +230,7 @@ app.post('/api/chat', async (req, res) => {
     console.error(`[LLM Error] ${err.message}`);
 
     res.status(502).json({
-      error: "I couldn't process that request right now. Please try again.",
+      error: "Sorry, I couldn't process that request. Please try again.",
       code: err.code || 'LLM_ERROR',
       requestId,
       responseType: 'fallback',
@@ -355,6 +355,12 @@ app.get(['/terms', '/terms-of-service'], (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'client', 'terms.html'));
 });
 
+// ── Google OAuth Callback Route Alias (supports both /api/auth and /auth paths) ─
+app.get('/auth/google/callback', (req, res) => {
+  const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+  res.redirect(307, `/api/auth/google/callback${query}`);
+});
+
 // ── Fallback: serve index.html for client-side routing ───────────────────────
 
 app.get('*', (req, res) => {
@@ -363,10 +369,10 @@ app.get('*', (req, res) => {
 
 // ── Startup ──────────────────────────────────────────────────────────────────
 
-const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : undefined);
+const HOST = process.env.HOST || '0.0.0.0';
 
 app.listen(PORT, HOST, () => {
-  const hostUrl = process.env.RENDER_EXTERNAL_URL || process.env.VOXA_BACKEND_URL || `http://localhost:${PORT}`;
+  const hostUrl = process.env.RENDER_EXTERNAL_URL || process.env.VOXA_BACKEND_URL || (process.env.NODE_ENV === 'production' ? 'https://voxa-cvsr.onrender.com' : `http://localhost:${PORT}`);
   console.log('');
   console.log('  ╔══════════════════════════════════════╗');
   console.log('  ║         VOXA — Adaptive Voice AI     ║');

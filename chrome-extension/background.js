@@ -9,7 +9,7 @@
  * - Never executes arbitrary strings or code.
  */
 
-let voxaUrl = 'http://localhost:3000';
+let voxaUrl = 'https://voxa-cvsr.onrender.com';
 
 // Initialize configurable backend URL from storage
 chrome.storage.local.get(['voxaBackendUrl'], (data) => {

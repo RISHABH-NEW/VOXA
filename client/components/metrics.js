@@ -98,7 +98,7 @@ class VoxaMetrics {
         min: null,
         max: null,
         count: 0,
-        label: 'Not measured',
+        label: 'No measurements yet',
       };
     }
 

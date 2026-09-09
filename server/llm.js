@@ -56,12 +56,16 @@ async function generateGeminiResponse(messages, options = {}) {
     throw new LLMError('LLM_API_KEY is not set for Gemini provider', 'NO_API_KEY');
   }
 
-  // Model fallback chain in case a preview model hits a 429 quota or 404
+  // Model fallback chain in case a model hits 429 quota, 503 high-demand, or 404
   const candidateModels = Array.from(new Set([
     configuredModel,
-    'gemini-3.5-flash',
+    'gemini-3.7-flash',
     'gemini-3.8-flash',
-  ]));
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-flash-lite',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+  ])).filter(Boolean);
 
   const { GoogleGenerativeAI } = require('@google/generative-ai');
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -126,10 +130,13 @@ async function generateGeminiResponse(messages, options = {}) {
       }
 
       lastError = err;
-      const isQuotaOrNotFound = err.message?.includes('429') || err.message?.includes('404') || err.message?.includes('Quota exceeded');
+      const isQuotaOrNotFound = err.status === 429 || err.status === 503 || err.status === 404 ||
+        err.message?.includes('429') || err.message?.includes('503') || err.message?.includes('404') ||
+        err.message?.includes('Quota') || err.message?.includes('quota') ||
+        err.message?.includes('high demand') || err.message?.includes('Service Unavailable');
 
       if (isQuotaOrNotFound && model !== candidateModels[candidateModels.length - 1]) {
-        console.warn(`[Gemini Warning] Model "${model}" hit quota/unavailable (${err.message.slice(0, 60)}...). Failing over to next candidate...`);
+        console.warn(`[Gemini Warning] Model "${model}" hit quota/demand (${err.message.slice(0, 60)}...). Failing over to next candidate...`);
         continue; // Try next candidate model
       }
       break;

@@ -37,7 +37,7 @@
         <!-- Connection Indicator -->
         <div class="connection-indicator" id="connectionIndicator" title="VOXA backend connection status">
           <span class="connection-dot"></span>
-          <span class="connection-text" id="connectionText">Connecting…</span>
+          <span class="connection-text" id="connectionText">Checking VOXA services...</span>
         </div>
       </div>
     </header>
@@ -50,7 +50,10 @@
         <div class="hero-intro">
           <h2 class="hero-title">Hi, I'm VOXA <span class="wave-hand">👋</span></h2>
           <p class="hero-subtitle">Your voice-first AI assistant</p>
-          <p class="hero-desc">Ask me about your schedule, assignments, emails, or anything you need.</p>
+          <div class="hero-ask-list">
+            <span class="hero-ask-label">Ask me about:</span>
+            <span class="hero-ask-tags">schedule • assignments • emails • browser</span>
+          </div>
         </div>
 
         <!-- Dynamic Status Display -->
@@ -299,7 +302,7 @@
             <div class="panel-header" id="metricsHeader">
               <div class="panel-header-title">
                 <h2>⚡ Measured Pipeline Latency</h2>
-                <span class="panel-badge-sub">Sub-second Engine</span>
+                <span class="panel-badge-sub">Measured Voice Performance</span>
               </div>
               <button class="panel-toggle" id="metricsToggle" aria-label="Toggle metrics">▼</button>
             </div>
@@ -456,7 +459,7 @@
         <span class="footer-dot">·</span>
         <span>Built for low-latency student workflows</span>
         <span class="footer-dot">·</span>
-        <span class="footer-badge">Sub-second interruption recovery</span>
+        <span class="footer-badge">Interruption & Recovery</span>
       </div>
       <div class="footer-links">
         <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
