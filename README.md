@@ -209,7 +209,7 @@ RIME_ENDPOINT=https://users.rime.ai/v1/rime-tts
 
 # ── LLM ──────────────────────────────────────
 LLM_PROVIDER=gemini
-LLM_MODEL=gemini-3.6-flash
+LLM_MODEL=gemini-3.5-flash
 LLM_API_KEY=your_gemini_api_key_here
 LLM_MODE=live
 
@@ -309,3 +309,12 @@ VOXA exposes its state in real-time on the UI and voice orb:
 - **Privacy First**: Gmail payloads only extract sender, subject, and short snippets. Full email bodies are never stored or logged.
 - **Complete Disconnect**: Disconnecting from Google immediately revokes tokens and wipes local storage.
 - **Git Ignored**: All local tokens (`data/`, `*.tokens.json`) and `.env` are excluded from version control.
+
+---
+
+## Known Limitations
+
+- **Browser Audio Capture**: Microphone input uses the HTML5 Web Speech API, which requires Chrome, Edge, or Safari with microphone permissions granted.
+- **Google API Rate Limits**: Free-tier Google Cloud credentials have per-minute quotas on Calendar, Classroom, and Gmail queries.
+- **Cloud Free Tier Spin-Down**: When deployed on free cloud hosts (e.g. Render free tier), the server spins down after 15 minutes of inactivity; the initial wake-up request may take ~30-50 seconds. Use an external uptime ping or paid tier for 24/7 warm availability.
+

@@ -22,9 +22,11 @@ desktop.ini
 *.log
 npm-debug.log*
 
-# Build
+# Build & archives
 dist/
 build/
+coverage/
+*.zip
 
 # Local data & tokens (NEVER commit tokens)
 data/
