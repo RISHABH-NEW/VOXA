@@ -4,23 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VOXA — Adaptive Voice AI</title>
-  <meta name="description" content="Voxa is an adaptive voice agent that knows when to stop, discard stale responses, and immediately adapt to what you actually said. Powered by Rime TTS.">
+  <meta name="description" content="VOXA is your personal voice-first AI assistant. Speak naturally, interrupt anytime, and stay on top of your schedule, assignments, and emails. Powered by Rime TTS.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app" id="app">
+  <div class="app mode-user" id="app">
     <!-- ── Header ──────────────────────────────────────────── -->
     <header class="header">
       <div class="header-brand">
-        <h1 class="logo">VOXA</h1>
+        <div class="logo-wrapper">
+          <span class="logo-mark">◈</span>
+          <h1 class="logo">VOXA</h1>
+        </div>
         <span class="subtitle">Adaptive Voice AI</span>
+        <span class="tagline-badge">Speak. Interrupt. Adapt.</span>
       </div>
+
       <div class="header-right">
-        <span class="tagline">Speak. Interrupt. Adapt.</span>
-        <div class="connection-indicator" id="connectionIndicator">
+        <!-- Mode Switcher -->
+        <div class="mode-toggle-group" id="modeToggleGroup" role="group" aria-label="Interface mode">
+          <button class="mode-btn active" id="btnModeUser" type="button" title="Clean assistant mode for regular use">
+            <span class="mode-icon">✨</span> User Mode
+          </button>
+          <button class="mode-btn" id="btnModeDemo" type="button" title="Technical diagnostics and hackathon judge suite">
+            <span class="mode-icon">⚡</span> Demo Mode
+          </button>
+        </div>
+
+        <!-- Connection Indicator -->
+        <div class="connection-indicator" id="connectionIndicator" title="VOXA backend connection status">
           <span class="connection-dot"></span>
           <span class="connection-text" id="connectionText">Connecting…</span>
         </div>
@@ -29,99 +44,165 @@
 
     <!-- ── Main Content ────────────────────────────────────── -->
     <main class="main-content">
-      <!-- Left: Orb + Controls -->
-      <section class="orb-section">
-        <!-- Status Indicator -->
+      <!-- Left / Center: Main Voice Experience -->
+      <section class="voice-stage">
+        <!-- Welcoming Hero Intro -->
+        <div class="hero-intro">
+          <h2 class="hero-title">Hi, I'm VOXA <span class="wave-hand">👋</span></h2>
+          <p class="hero-subtitle">Your voice-first AI assistant</p>
+          <p class="hero-desc">Ask me about your schedule, assignments, emails, or anything you need.</p>
+        </div>
+
+        <!-- Dynamic Status Display -->
         <div class="status-container">
           <div class="status-badge" id="statusBadge">
             <span class="status-dot" id="statusDot"></span>
-            <span class="status-text" id="statusText">READY</span>
+            <span class="status-text" id="statusText">Ready when you are</span>
           </div>
-          <p class="status-detail" id="statusDetail">Press Start Voice to begin</p>
+          <p class="status-detail" id="statusDetail">Press Start Talking to begin</p>
         </div>
 
-        <!-- Voice Orb -->
-        <div class="orb-container" id="orbContainer">
+        <!-- Voice Orb (Central Visual Anchor) -->
+        <div class="orb-container" id="orbContainer" title="VOXA Voice Orb">
           <canvas id="orbCanvas" width="340" height="340"></canvas>
+          <div class="orb-glow-backdrop"></div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-          <button class="btn btn-primary" id="btnVoice" aria-label="Start Voice">
-            <span class="btn-icon" id="btnIcon">🎤</span>
-            <span class="btn-text" id="btnText">Start Voice</span>
+        <!-- Primary Controls -->
+        <div class="controls-area">
+          <button class="btn btn-primary" id="btnVoice" aria-label="Start Talking">
+            <span class="btn-icon" id="btnIcon">🎙</span>
+            <span class="btn-text" id="btnText">Start Talking</span>
           </button>
-          <button class="btn btn-secondary" id="btnInterrupt" disabled aria-label="Interrupt Voxa">
+          
+          <button class="btn btn-interrupt" id="btnInterrupt" disabled aria-label="Interrupt VOXA" title="Interrupt VOXA immediately while speaking">
             <span class="btn-icon">✋</span>
-            <span class="btn-text">Interrupt Voxa</span>
+            <span class="btn-text">Interrupt VOXA</span>
           </button>
         </div>
 
-        <!-- Error Banner -->
-        <div class="error-banner" id="errorBanner" hidden>
-          <span class="error-icon">⚠️</span>
-          <span class="error-message" id="errorMessage"></span>
-          <button class="error-close" id="errorClose" aria-label="Dismiss">✕</button>
+        <!-- Suggestion Chips -->
+        <div class="suggestion-chips" id="suggestionChips">
+          <span class="chips-label">Try asking:</span>
+          <div class="chips-list">
+            <button class="chip" type="button" data-query="What do I have tomorrow?">
+              📅 "What do I have tomorrow?"
+            </button>
+            <button class="chip" type="button" data-query="What assignments do I have due?">
+              📚 "Any assignments due?"
+            </button>
+            <button class="chip" type="button" data-query="Do I have any important emails?">
+              ✉️ "Do I have important emails?"
+            </button>
+            <button class="chip" type="button" data-query="Open Gmail.">
+              🌐 "Open Gmail"
+            </button>
+          </div>
         </div>
 
-        <!-- Interim transcript (what user is saying) -->
+        <!-- Rotating Example Ticker -->
+        <div class="prompt-ticker" id="promptTicker">
+          <span class="ticker-label">💡 Try asking VOXA:</span>
+          <span class="ticker-text" id="tickerText">"What do I have tomorrow?"</span>
+        </div>
+
+        <!-- Interim Speech Transcript (What user is saying in real time) -->
         <div class="interim-transcript" id="interimTranscript" hidden>
+          <span class="interim-icon">🎙</span>
           <span class="interim-label">Hearing:</span>
           <span class="interim-text" id="interimText"></span>
         </div>
+
+        <!-- User-friendly Error Banner -->
+        <div class="error-banner" id="errorBanner" hidden>
+          <span class="error-icon">⚠️</span>
+          <span class="error-message" id="errorMessage">Something went wrong. Let's try again.</span>
+          <button class="error-close" id="errorClose" aria-label="Dismiss">✕</button>
+        </div>
       </section>
 
-      <!-- Right: Panels -->
-      <aside class="panels">
+      <!-- Right: Friendly Conversation & Connected Apps -->
+      <aside class="sidebar-panels">
+        <!-- Quick Actions Bar -->
+        <div class="panel panel-quick-actions">
+          <div class="quick-actions-header">
+            <h3>Quick actions</h3>
+          </div>
+          <div class="quick-actions-grid" id="quickActions">
+            <button class="qa-card" type="button" data-query="What do I have on my calendar?" title="Check Google Calendar">
+              <span class="qa-icon">📅</span>
+              <div class="qa-info">
+                <span class="qa-title">My schedule</span>
+                <span class="qa-sub">Calendar</span>
+              </div>
+            </button>
+
+            <button class="qa-card" type="button" data-query="What assignments do I have due?" title="Check Google Classroom">
+              <span class="qa-icon">📚</span>
+              <div class="qa-info">
+                <span class="qa-title">Assignments</span>
+                <span class="qa-sub">Classroom</span>
+              </div>
+            </button>
+
+            <button class="qa-card" type="button" data-query="Do I have any important emails?" title="Check Gmail inbox">
+              <span class="qa-icon">✉️</span>
+              <div class="qa-info">
+                <span class="qa-title">Important emails</span>
+                <span class="qa-sub">Gmail</span>
+              </div>
+            </button>
+
+            <button class="qa-card" type="button" data-query="Open Gmail." title="Open browser tab via Chrome Extension">
+              <span class="qa-icon">🌐</span>
+              <div class="qa-info">
+                <span class="qa-title">Open browser</span>
+                <span class="qa-sub">Chrome</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <!-- Conversation Transcript -->
         <div class="panel panel-transcript">
           <div class="panel-header">
-            <h2>Conversation</h2>
-            <button class="panel-action" id="btnClearChat" title="Clear conversation">Clear</button>
+            <div class="panel-header-title">
+              <h2>Conversation</h2>
+              <span class="panel-badge">Voice Transcript</span>
+            </div>
+            <button class="panel-action" id="btnClearChat" title="Clear conversation history">Clear</button>
           </div>
+          
           <div class="panel-body transcript-body" id="transcriptBody">
             <div class="transcript-empty" id="transcriptEmpty">
-              <p>Start a voice session to begin your conversation with Voxa.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Voice Activity -->
-        <div class="panel panel-activity" id="activityPanel">
-          <div class="panel-header">
-            <h2>Voice Activity</h2>
-            <span class="activity-request" id="activityRequestId">IDLE</span>
-          </div>
-          <div class="panel-body activity-body">
-            <div class="activity-grid">
-              <div class="activity-card">
-                <span class="activity-label">STATE</span>
-                <span class="activity-badge" id="activityStateBadge">READY</span>
-              </div>
-              <div class="activity-card">
-                <span class="activity-label">SERVICE</span>
-                <span class="activity-val" id="activityService">—</span>
-              </div>
-              <div class="activity-card full-width">
-                <span class="activity-label">ACTION</span>
-                <span class="activity-val" id="activityAction">—</span>
+              <div class="empty-icon">💬</div>
+              <h4>Let's get started</h4>
+              <p>Press <strong>Start Talking</strong> or click a quick action above.</p>
+              <div class="empty-examples">
+                <span>"What do I have tomorrow?"</span>
+                <span>"What's due this week?"</span>
+                <span>"Check my important emails."</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Connected Services -->
+        <!-- Connected Apps Section -->
         <div class="panel panel-integrations">
           <div class="panel-header" id="integrationsHeader">
-            <h2>Connected Services</h2>
-            <button class="panel-toggle" id="integrationsToggle" aria-label="Toggle integrations">▼</button>
+            <div class="panel-header-title">
+              <h2>Your connected apps</h2>
+              <span class="panel-badge-sub">Live Integrations</span>
+            </div>
+            <button class="panel-toggle" id="integrationsToggle" aria-label="Toggle connected apps">▼</button>
           </div>
+
           <div class="panel-body integrations-body" id="integrationsBody">
-            <!-- Google Services -->
-            <div class="service-card">
+            <!-- Google Account Hub -->
+            <div class="service-card google-hub-card">
               <div class="service-card-header">
                 <div class="service-title-group">
-                  <span class="service-icon">🌐</span>
+                  <div class="service-icon-wrap google-icon">G</div>
                   <div>
                     <div class="service-title">Google Account</div>
                     <div class="service-sub" id="googleUserEmail">Not Connected</div>
@@ -129,30 +210,52 @@
                 </div>
                 <button class="btn btn-connect" id="btnGoogleAuth">Connect</button>
               </div>
+
+              <!-- Nested Google Services -->
               <div class="service-list">
                 <div class="service-row">
-                  <span class="service-row-name">Google Calendar</span>
+                  <div class="service-meta">
+                    <span class="service-row-icon">📅</span>
+                    <div>
+                      <div class="service-row-name">Google Calendar</div>
+                      <div class="service-row-desc">Check your schedule and events</div>
+                    </div>
+                  </div>
                   <span class="service-row-status" id="calendarStatus">Not Connected</span>
                 </div>
+
                 <div class="service-row">
-                  <span class="service-row-name">Google Classroom</span>
+                  <div class="service-meta">
+                    <span class="service-row-icon">📚</span>
+                    <div>
+                      <div class="service-row-name">Google Classroom</div>
+                      <div class="service-row-desc">Check assignments and coursework</div>
+                    </div>
+                  </div>
                   <span class="service-row-status" id="classroomStatus">Not Connected</span>
                 </div>
+
                 <div class="service-row">
-                  <span class="service-row-name">Gmail</span>
+                  <div class="service-meta">
+                    <span class="service-row-icon">✉️</span>
+                    <div>
+                      <div class="service-row-name">Gmail</div>
+                      <div class="service-row-desc">Find important emails</div>
+                    </div>
+                  </div>
                   <span class="service-row-status" id="gmailStatus">Not Connected</span>
                 </div>
               </div>
             </div>
 
             <!-- Chrome Extension -->
-            <div class="service-card">
+            <div class="service-card extension-card">
               <div class="service-card-header">
                 <div class="service-title-group">
-                  <span class="service-icon">🧩</span>
+                  <div class="service-icon-wrap extension-icon">🧩</div>
                   <div>
                     <div class="service-title">Chrome Extension</div>
-                    <div class="service-sub" id="chromeDetail">Browser Companion</div>
+                    <div class="service-sub" id="chromeDetail">Open pages and links in Chrome</div>
                   </div>
                 </div>
                 <span class="service-badge" id="chromeStatusBadge">Not Connected</span>
@@ -161,150 +264,185 @@
           </div>
         </div>
 
-        <!-- Technical Metrics -->
-        <div class="panel panel-metrics">
-          <div class="panel-header" id="metricsHeader">
-            <h2>Technical Metrics</h2>
-            <button class="panel-toggle" id="metricsToggle" aria-label="Toggle metrics">▼</button>
-          </div>
-          <div class="panel-body metrics-body" id="metricsBody">
-            <!-- Latency Overview Grid -->
-            <div class="metric-group">
-              <h3>Measured Pipeline Latency</h3>
-              <div class="metric-grid-4">
-                <div class="metric-item">
-                  <span class="metric-label">Stop Latency</span>
-                  <span class="metric-value highlight-emerald" id="metricCurrent">—</span>
-                  <span class="metric-sub">Interruption</span>
-                </div>
-                <div class="metric-item">
-                  <span class="metric-label">Tool Latency</span>
-                  <span class="metric-value" id="metricTool">—</span>
-                  <span class="metric-sub">Google / API</span>
-                </div>
-                <div class="metric-item">
-                  <span class="metric-label">LLM Latency</span>
-                  <span class="metric-value" id="metricLlm">—</span>
-                  <span class="metric-sub">Generation</span>
-                </div>
-                <div class="metric-item">
-                  <span class="metric-label">TTS Latency</span>
-                  <span class="metric-value" id="metricTts">—</span>
-                  <span class="metric-sub">Rime synthesis</span>
-                </div>
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- DEMO & TECHNICAL DETAILS (Active in Demo Mode / Collapsible)  -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div class="demo-tech-wrapper" id="demoTechWrapper">
+          <!-- Voice Activity Diagnostics -->
+          <div class="panel panel-activity" id="activityPanel">
+            <div class="panel-header">
+              <div class="panel-header-title">
+                <h2>⚙ Voice Activity Diagnostics</h2>
+                <span class="activity-request" id="activityRequestId">IDLE</span>
               </div>
             </div>
-
-            <!-- Interruption Statistics -->
-            <div class="metric-group">
-              <h3>Interruption Performance Stats</h3>
-              <div class="metric-grid">
-                <div class="metric-item">
-                  <span class="metric-label">Latest Stop</span>
-                  <span class="metric-value" id="metricStopLatest">—</span>
+            <div class="panel-body activity-body">
+              <div class="activity-grid">
+                <div class="activity-card">
+                  <span class="activity-label">INTERNAL STATE</span>
+                  <span class="activity-badge" id="activityStateBadge">READY</span>
                 </div>
-                <div class="metric-item">
-                  <span class="metric-label">Average</span>
-                  <span class="metric-value" id="metricAverage">—</span>
+                <div class="activity-card">
+                  <span class="activity-label">TARGET SERVICE</span>
+                  <span class="activity-val" id="activityService">—</span>
                 </div>
-                <div class="metric-item">
-                  <span class="metric-label">Min</span>
-                  <span class="metric-value" id="metricMin">—</span>
-                </div>
-                <div class="metric-item">
-                  <span class="metric-label">Max</span>
-                  <span class="metric-value" id="metricMax">—</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Event Timeline -->
-            <div class="metric-group">
-              <h3>Event Timeline</h3>
-              <div class="timeline-container" id="timelineContainer">
-                <div class="timeline-empty">No events recorded yet</div>
-              </div>
-            </div>
-
-            <!-- System Status -->
-            <div class="metric-group">
-              <h3>System Status</h3>
-              <div class="status-grid" id="systemStatus">
-                <div class="status-item">
-                  <span class="status-item-label">STT</span>
-                  <span class="status-item-value" id="sttStatus">—</span>
-                </div>
-                <div class="status-item">
-                  <span class="status-item-label">LLM</span>
-                  <span class="status-item-value" id="llmStatus">—</span>
-                </div>
-                <div class="status-item">
-                  <span class="status-item-label">Rime TTS</span>
-                  <span class="status-item-value" id="rimeStatus">—</span>
-                </div>
-                <div class="status-item">
-                  <span class="status-item-label">Mode</span>
-                  <span class="status-item-value" id="modeStatus">—</span>
+                <div class="activity-card full-width">
+                  <span class="activity-label">EXECUTED ACTION</span>
+                  <span class="activity-val" id="activityAction">—</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Demo & Testing -->
-        <div class="panel panel-demo">
-          <div class="panel-header" id="demoHeader">
-            <h2>Demo &amp; Testing Suite</h2>
-            <button class="panel-toggle" id="demoToggle" aria-label="Toggle demo">▼</button>
+          <!-- Technical Metrics -->
+          <div class="panel panel-metrics">
+            <div class="panel-header" id="metricsHeader">
+              <div class="panel-header-title">
+                <h2>⚡ Measured Pipeline Latency</h2>
+                <span class="panel-badge-sub">Sub-second Engine</span>
+              </div>
+              <button class="panel-toggle" id="metricsToggle" aria-label="Toggle metrics">▼</button>
+            </div>
+            <div class="panel-body metrics-body" id="metricsBody">
+              <!-- Latency Overview Grid -->
+              <div class="metric-group">
+                <h3>Pipeline Stage Breakdown</h3>
+                <div class="metric-grid-4">
+                  <div class="metric-item">
+                    <span class="metric-label">Stop Latency</span>
+                    <span class="metric-value highlight-emerald" id="metricCurrent">—</span>
+                    <span class="metric-sub">Interruption</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">Tool Latency</span>
+                    <span class="metric-value" id="metricTool">—</span>
+                    <span class="metric-sub">Google / API</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">LLM Latency</span>
+                    <span class="metric-value" id="metricLlm">—</span>
+                    <span class="metric-sub">Generation</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">TTS Latency</span>
+                    <span class="metric-value" id="metricTts">—</span>
+                    <span class="metric-sub">Rime synthesis</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interruption Statistics -->
+              <div class="metric-group">
+                <h3>Interruption Performance Stats</h3>
+                <div class="metric-grid">
+                  <div class="metric-item">
+                    <span class="metric-label">Latest Stop</span>
+                    <span class="metric-value" id="metricStopLatest">—</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">Average</span>
+                    <span class="metric-value" id="metricAverage">—</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">Min</span>
+                    <span class="metric-value" id="metricMin">—</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-label">Max</span>
+                    <span class="metric-value" id="metricMax">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event Timeline -->
+              <div class="metric-group">
+                <h3>Event Timeline</h3>
+                <div class="timeline-container" id="timelineContainer">
+                  <div class="timeline-empty">No events recorded yet</div>
+                </div>
+              </div>
+
+              <!-- System Status -->
+              <div class="metric-group">
+                <h3>Engine &amp; Model Status</h3>
+                <div class="status-grid" id="systemStatus">
+                  <div class="status-item">
+                    <span class="status-item-label">STT</span>
+                    <span class="status-item-value" id="sttStatus">—</span>
+                  </div>
+                  <div class="status-item">
+                    <span class="status-item-label">LLM</span>
+                    <span class="status-item-value" id="llmStatus">—</span>
+                  </div>
+                  <div class="status-item">
+                    <span class="status-item-label">Rime TTS</span>
+                    <span class="status-item-value" id="rimeStatus">—</span>
+                  </div>
+                  <div class="status-item">
+                    <span class="status-item-label">Mode</span>
+                    <span class="status-item-value" id="modeStatus">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="panel-body demo-body" id="demoBody">
-            <!-- Demo Quick Tests -->
-            <div class="demo-suite">
-              <div class="suite-title">Hackathon Test Scenarios</div>
-              <div class="suite-buttons">
-                <button class="btn btn-suite" id="btnTest1">
-                  <span class="suite-badge">TEST 1</span>
-                  <span class="suite-text">"What do I have tomorrow?"</span>
-                </button>
-                <button class="btn btn-suite" id="btnTest2">
-                  <span class="suite-badge">TEST 2</span>
-                  <span class="suite-text">"Do I have any important emails?"</span>
-                </button>
-                <button class="btn btn-suite" id="btnTest3">
-                  <span class="suite-badge">TEST 3</span>
-                  <span class="suite-text">"Open Gmail."</span>
-                </button>
-                <button class="btn btn-suite btn-suite-primary" id="btnTest4">
-                  <span class="suite-badge-primary">TEST 4</span>
-                  <span class="suite-text">⚡ Master Interruption &amp; Adapt Demo</span>
+
+          <!-- Hackathon Judge Demo Suite -->
+          <div class="panel panel-demo">
+            <div class="panel-header" id="demoHeader">
+              <div class="panel-header-title">
+                <h2>🏆 Hackathon Demo &amp; Testing Suite</h2>
+              </div>
+              <button class="panel-toggle" id="demoToggle" aria-label="Toggle demo">▼</button>
+            </div>
+            <div class="panel-body demo-body" id="demoBody">
+              <div class="demo-suite">
+                <div class="suite-title">Judge Test Scenarios</div>
+                <div class="suite-buttons">
+                  <button class="btn btn-suite" id="btnTest1">
+                    <span class="suite-badge">TEST 1</span>
+                    <span class="suite-text">"What do I have tomorrow?"</span>
+                  </button>
+                  <button class="btn btn-suite" id="btnTest2">
+                    <span class="suite-badge">TEST 2</span>
+                    <span class="suite-text">"Do I have any important emails?"</span>
+                  </button>
+                  <button class="btn btn-suite" id="btnTest3">
+                    <span class="suite-badge">TEST 3</span>
+                    <span class="suite-text">"Open Gmail."</span>
+                  </button>
+                  <button class="btn btn-suite btn-suite-primary" id="btnTest4">
+                    <span class="suite-badge-primary">TEST 4</span>
+                    <span class="suite-text">⚡ Master Interruption &amp; Adapt Demo</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Demo Checklist -->
+              <div class="checklist" id="demoChecklist">
+                <h3>Interruption Acceptance Checklist</h3>
+                <div class="checklist-items" id="checklistItems">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Automated Stress Test -->
+              <div class="demo-controls">
+                <button class="btn btn-stress" id="btnStressTest">
+                  ⚡ RUN AUTOMATED STRESS TEST
                 </button>
               </div>
-            </div>
 
-            <!-- Demo Checklist -->
-            <div class="checklist" id="demoChecklist">
-              <h3>Interruption Test Checklist</h3>
-              <div class="checklist-items" id="checklistItems">
-                <!-- Populated by JS -->
+              <!-- Stress Test Result -->
+              <div class="stress-result" id="stressResult" hidden>
+                <span class="stress-label" id="stressLabel">STRESS TEST</span>
+                <span class="stress-status" id="stressStatus"></span>
               </div>
-            </div>
 
-            <!-- Stress Test Controls -->
-            <div class="demo-controls">
-              <button class="btn btn-stress" id="btnStressTest">
-                ⚡ RUN AUTOMATED STRESS TEST
-              </button>
-            </div>
-
-            <!-- Stress Test Result -->
-            <div class="stress-result" id="stressResult" hidden>
-              <span class="stress-label" id="stressLabel">STRESS TEST</span>
-              <span class="stress-status" id="stressStatus"></span>
-            </div>
-
-            <!-- Mock Mode Banner -->
-            <div class="mock-banner" id="mockBanner" hidden>
-              <span>⚙️ MOCK/DEVELOPMENT MODE — Not using real LLM</span>
+              <!-- Mock Mode Banner -->
+              <div class="mock-banner" id="mockBanner" hidden>
+                <span>⚙️ MOCK/DEVELOPMENT MODE — Not using real LLM</span>
+              </div>
             </div>
           </div>
         </div>
@@ -313,9 +451,13 @@
 
     <!-- ── Footer ──────────────────────────────────────────── -->
     <footer class="footer">
-      <span>VOXA — Adaptive Voice AI · Powered by <strong>Rime TTS</strong></span>
-      <span class="footer-separator">|</span>
-      <span>Rime Hackathon 2026</span>
+      <div class="footer-content">
+        <span>VOXA — Adaptive Voice AI · Voice powered by <strong>Rime TTS</strong> (coda / astra)</span>
+        <span class="footer-dot">·</span>
+        <span>Built for low-latency student workflows</span>
+        <span class="footer-dot">·</span>
+        <span class="footer-badge">Sub-second interruption recovery</span>
+      </div>
     </footer>
   </div>
 

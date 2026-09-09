@@ -56,6 +56,11 @@
     interimText: $('#interimText'),
     connectionDot: $('.connection-dot'),
     connectionText: $('#connectionText'),
+    // Mode switcher
+    btnModeUser: $('#btnModeUser'),
+    btnModeDemo: $('#btnModeDemo'),
+    demoTechWrapper: $('#demoTechWrapper'),
+    tickerText: $('#tickerText'),
     // Metrics
     metricCurrent: $('#metricCurrent'),
     metricAverage: $('#metricAverage'),
@@ -239,31 +244,51 @@
     }
   }
 
+  const FRIENDLY_STATE_TEXTS = {
+    READY: 'Ready when you are',
+    LISTENING: "I'm listening...",
+    THINKING: 'Let me check that...',
+    TOOL_WORKING: 'Checking your services...',
+    SPEAKING: 'VOXA is speaking',
+    INTERRUPTING: 'Got it — stopping...',
+    CANCELLING: 'Stopping...',
+    RECOVERING: 'Updating your request...',
+    INTERRUPTED: 'Interrupted — adapting...',
+    ERROR: "Something went wrong. Let's try again.",
+  };
+
+  let isDemoMode = localStorage.getItem('voxa_ui_mode') === 'demo';
+
   function setVoiceState(newState, detail = '', meta = {}) {
     state.setState(newState);
 
-    // Update CSS state class on app container
-    els.app.className = 'app state-' + newState.toLowerCase();
+    // Update CSS state class on app container while preserving mode
+    const modeClass = (els.app.classList.contains('mode-demo') || isDemoMode) ? 'mode-demo' : 'mode-user';
+    els.app.className = `app ${modeClass} state-${newState.toLowerCase()}`;
 
-    // Status badge
-    els.statusText.textContent = newState;
+    // Friendly status badge on main orb
+    let friendlyText = FRIENDLY_STATE_TEXTS[newState] || newState;
+    if (newState === 'TOOL_WORKING' && meta.service) {
+      friendlyText = `Checking ${meta.service}...`;
+    }
+    els.statusText.textContent = friendlyText;
 
     // Status detail
     const details = {
-      READY: 'Press Start Voice to begin',
+      READY: 'Press Start Talking to begin',
       LISTENING: 'Listening for your voice…',
       THINKING: 'Processing your request…',
-      TOOL_WORKING: meta.action ? `Accessing ${meta.service || 'services'}: ${meta.action}` : 'Accessing connected services…',
-      SPEAKING: 'Voxa is responding — speak to interrupt',
+      TOOL_WORKING: meta.action ? `Checking ${meta.service || 'services'}: ${meta.action}` : 'Checking your services…',
+      SPEAKING: 'VOXA is responding — speak to interrupt',
       INTERRUPTING: 'Interruption detected — stopping audio…',
-      CANCELLING: 'Cancelling in-flight operations…',
-      RECOVERING: 'Adapting to new instruction…',
+      CANCELLING: 'Stopping previous request…',
+      RECOVERING: 'Adapting to your new request…',
       INTERRUPTED: 'Interrupted — adapting…',
-      ERROR: detail || 'An error occurred',
+      ERROR: detail || "Something went wrong. Let's try again.",
     };
     els.statusDetail.textContent = detail || details[newState] || '';
 
-    // Update Activity Panel
+    // Update Activity Panel (preserves raw technical state for judges in Demo Mode)
     updateVoiceActivity(state.currentRequestId, newState, meta.service, meta.action);
 
     // Update orb
@@ -275,8 +300,8 @@
 
   function updateButtons(voiceState) {
     if (!sessionActive) {
-      els.btnText.textContent = 'Start Voice';
-      els.btnIcon.textContent = '🎤';
+      els.btnText.textContent = 'Start Talking';
+      els.btnIcon.textContent = '🎙';
       els.btnVoice.classList.remove('active');
       els.btnInterrupt.disabled = true;
       return;
@@ -284,29 +309,39 @@
 
     switch (voiceState) {
       case 'READY':
+        els.btnText.textContent = 'Start Talking';
+        els.btnIcon.textContent = '🎙';
+        els.btnVoice.classList.remove('active');
+        els.btnInterrupt.disabled = true;
+        break;
       case 'LISTENING':
-        els.btnText.textContent = 'Stop Voice';
+        els.btnText.textContent = 'Listening...';
         els.btnIcon.textContent = '⏹';
         els.btnVoice.classList.add('active');
         els.btnInterrupt.disabled = true;
         break;
       case 'THINKING':
-        els.btnText.textContent = 'Stop Voice';
-        els.btnIcon.textContent = '⏹';
-        els.btnVoice.classList.add('active');
-        els.btnInterrupt.disabled = true;
-        break;
-      case 'SPEAKING':
-        els.btnText.textContent = 'Stop Voice';
+      case 'TOOL_WORKING':
+        els.btnText.textContent = 'Thinking...';
         els.btnIcon.textContent = '⏹';
         els.btnVoice.classList.add('active');
         els.btnInterrupt.disabled = false;
         break;
+      case 'SPEAKING':
+        els.btnText.textContent = 'Speaking...';
+        els.btnIcon.textContent = '⏹';
+        els.btnVoice.classList.add('active');
+        els.btnInterrupt.disabled = false;
+        break;
+      case 'INTERRUPTING':
       case 'INTERRUPTED':
+      case 'RECOVERING':
+        els.btnText.textContent = 'Adapting...';
+        els.btnIcon.textContent = '🔄';
         els.btnInterrupt.disabled = true;
         break;
       case 'ERROR':
-        els.btnText.textContent = 'Retry';
+        els.btnText.textContent = 'Try Again';
         els.btnIcon.textContent = '🔄';
         els.btnVoice.classList.remove('active');
         els.btnInterrupt.disabled = true;
@@ -712,21 +747,21 @@
     }
 
     const msgEl = document.createElement('div');
-    msgEl.className = 'transcript-message';
+    msgEl.className = `transcript-message ${role === 'user' ? 'user-msg' : 'assistant-msg'}`;
     msgEl.dataset.messageId = state.conversationHistory[state.conversationHistory.length - 1]?.id || '';
 
     const roleEl = document.createElement('div');
     roleEl.className = `transcript-role ${role}`;
     roleEl.textContent = role === 'user' ? 'YOU' : 'VOXA';
 
-    if (opts.isMock) {
+    if (opts.isMock && isDemoMode) {
       const mockBadge = document.createElement('span');
       mockBadge.className = 'mock-badge';
       mockBadge.textContent = 'MOCK';
       roleEl.appendChild(mockBadge);
     }
 
-    if (opts.isFallback) {
+    if (opts.isFallback && isDemoMode) {
       const fallbackBadge = document.createElement('span');
       fallbackBadge.className = 'mock-badge';
       fallbackBadge.textContent = 'FALLBACK';
@@ -752,14 +787,14 @@
 
       const badge = document.createElement('div');
       badge.className = 'interrupted-badge';
-      badge.innerHTML = '<span>⚡</span> INTERRUPTED';
+      badge.innerHTML = '<span>⚡</span> Interrupted';
       msgEl.appendChild(badge);
     }
 
     // Also add a visual separator
     const separator = document.createElement('div');
     separator.className = 'transcript-message';
-    separator.innerHTML = '<div class="interrupted-badge" style="margin:4px 0">⚡ INTERRUPTED</div>';
+    separator.innerHTML = '<div class="interrupted-badge" style="margin:4px 0">⚡ Interrupted</div>';
     els.transcriptBody.appendChild(separator);
     els.transcriptBody.scrollTop = els.transcriptBody.scrollHeight;
   }
@@ -1036,11 +1071,82 @@
     }
   }
 
+  // ── Mode Switcher & Prompt Ticker ──────────────────────────────────────────
+
+  function applyMode(demo) {
+    isDemoMode = demo;
+    localStorage.setItem('voxa_ui_mode', demo ? 'demo' : 'user');
+    if (demo) {
+      els.app.classList.remove('mode-user');
+      els.app.classList.add('mode-demo');
+      if (els.btnModeDemo) els.btnModeDemo.classList.add('active');
+      if (els.btnModeUser) els.btnModeUser.classList.remove('active');
+    } else {
+      els.app.classList.remove('mode-demo');
+      els.app.classList.add('mode-user');
+      if (els.btnModeUser) els.btnModeUser.classList.add('active');
+      if (els.btnModeDemo) els.btnModeDemo.classList.remove('active');
+    }
+  }
+
+  const ROTATING_PROMPTS = [
+    '"What do I have tomorrow?"',
+    '"Any assignments due this week?"',
+    '"Do I have important emails?"',
+    '"Open my Classroom."',
+    '"Open the email from my professor."',
+    '"What tab is currently open?"',
+  ];
+  let promptTickerIndex = 0;
+  function startPromptTicker() {
+    if (!els.tickerText) return;
+    setInterval(() => {
+      promptTickerIndex = (promptTickerIndex + 1) % ROTATING_PROMPTS.length;
+      els.tickerText.style.opacity = '0';
+      setTimeout(() => {
+        els.tickerText.textContent = ROTATING_PROMPTS[promptTickerIndex];
+        els.tickerText.style.opacity = '1';
+      }, 300);
+    }, 4200);
+  }
+
   // ══════════════════════════════════════════════════════════════════════════
   // EVENT LISTENERS
   // ══════════════════════════════════════════════════════════════════════════
 
   function setupEventListeners() {
+    // Mode toggles
+    if (els.btnModeUser) els.btnModeUser.addEventListener('click', () => applyMode(false));
+    if (els.btnModeDemo) els.btnModeDemo.addEventListener('click', () => applyMode(true));
+
+    // Suggestion chips
+    document.querySelectorAll('.chip[data-query]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const q = chip.getAttribute('data-query');
+        if (q) {
+          if (!sessionActive) {
+            sessionActive = true;
+            metrics.startSession();
+          }
+          processUserMessage(q);
+        }
+      });
+    });
+
+    // Quick action cards
+    document.querySelectorAll('.qa-card[data-query]').forEach(card => {
+      card.addEventListener('click', () => {
+        const q = card.getAttribute('data-query');
+        if (q) {
+          if (!sessionActive) {
+            sessionActive = true;
+            metrics.startSession();
+          }
+          processUserMessage(q);
+        }
+      });
+    });
+
     // Main voice button
     els.btnVoice.addEventListener('click', () => {
       if (state.voiceState === 'ERROR') {
@@ -1053,7 +1159,7 @@
 
     // Manual interrupt button
     els.btnInterrupt.addEventListener('click', () => {
-      if (state.voiceState === 'SPEAKING') {
+      if (state.voiceState === 'SPEAKING' || state.voiceState === 'THINKING' || state.voiceState === 'TOOL_WORKING') {
         handleInterruption();
       }
     });
@@ -1102,13 +1208,13 @@
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'transcript-empty';
         emptyDiv.id = 'transcriptEmpty';
-        emptyDiv.innerHTML = '<p>Start a voice session to begin your conversation with Voxa.</p>';
+        emptyDiv.innerHTML = '<div class="empty-icon">💬</div><h4>Let\'s get started</h4><p>Press <strong>Start Talking</strong> or click a quick action above.</p><div class="empty-examples"><span>"What do I have tomorrow?"</span><span>"What\'s due this week?"</span><span>"Check my important emails."</span></div>';
         els.transcriptBody.appendChild(emptyDiv);
       }
       metrics.startSession();
       updateMetricsDisplay();
       updateChecklist();
-      updateVoiceActivity(null, 'READY', '—', 'Press Start Voice to begin');
+      updateVoiceActivity(null, 'READY', '—', 'Press Start Talking to begin');
     });
 
     // Error close
@@ -1172,6 +1278,9 @@
       'background: #1a1a28; color: #22d3ee; padding: 4px 8px; border-radius: 0 4px 4px 0;'
     );
 
+    // Apply saved or default UI mode
+    applyMode(isDemoMode);
+
     // Initialize orb
     const canvas = document.getElementById('orbCanvas');
     if (canvas) {
@@ -1181,6 +1290,9 @@
 
     // Setup event listeners
     setupEventListeners();
+
+    // Start rotating prompt ticker
+    startPromptTicker();
 
     // Initialize checklist display
     updateChecklist();
@@ -1194,7 +1306,7 @@
     // Set initial state
     setVoiceState('READY');
 
-    console.log('[VOXA] Ready. Press Start Voice or press Space.');
+    console.log('[VOXA] Ready. Press Start Talking or press Space.');
   }
 
   // Start when DOM is ready
