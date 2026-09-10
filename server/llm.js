@@ -59,12 +59,14 @@ async function generateGeminiResponse(messages, options = {}) {
   // Model fallback chain in case a model hits 429 quota, 503 high-demand, or 404
   const candidateModels = Array.from(new Set([
     configuredModel,
+    'gemini-3.5-flash',
+    'gemini-3.6-flash',
     'gemini-3.7-flash',
     'gemini-3.8-flash',
+    'gemini-flash-latest',
+    'gemini-flash-lite-latest',
     'gemini-3.5-flash-lite',
-    'gemini-3.1-flash-lite',
-    'gemini-3.6-flash',
-    'gemini-3.5-flash',
+    'gemini-2.5-flash',
   ])).filter(Boolean);
 
   const { GoogleGenerativeAI } = require('@google/generative-ai');

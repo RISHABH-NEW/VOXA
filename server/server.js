@@ -232,6 +232,7 @@ app.post('/api/chat', async (req, res) => {
     res.status(502).json({
       error: "Sorry, I couldn't process that request. Please try again.",
       code: err.code || 'LLM_ERROR',
+      details: err.message ? err.message.replace(/key=[^&\s]+/g, 'key=[REDACTED]') : undefined,
       requestId,
       responseType: 'fallback',
     });
