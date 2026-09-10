@@ -240,7 +240,13 @@ class CommandRouter {
     }
 
     // ── 5. Gmail Queries ─────────────────────────────────────────────────────
-    if (lower.includes('unread email') || lower.includes('unread emails') || lower.includes('any unread')) {
+    if (
+      lower.includes('important email') ||
+      lower.includes('important emails') ||
+      lower.includes('unread email') ||
+      lower.includes('unread emails') ||
+      lower.includes('any unread')
+    ) {
       return {
         requiresIntegration: true,
         service: 'gmail',

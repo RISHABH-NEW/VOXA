@@ -184,6 +184,30 @@ async function runTests() {
     console.log('      Verified: Aborted request was cleanly stopped before execution');
   });
 
+  // ── 6. Quick Actions Independent Execution & Routing ────────────────────
+  await test('CommandRouter routes "Do I have important emails?" to GMAIL_UNREAD', () => {
+    const res = commandRouter.route('Do I have important emails?');
+    assert.strictEqual(res.requiresIntegration, true);
+    assert.strictEqual(res.service, 'gmail');
+    assert.strictEqual(res.action, 'getUnreadEmails');
+  });
+
+  await test('CommandRouter routes "Any assignments due?" to CLASSROOM_ASSIGNMENTS', () => {
+    const res = commandRouter.route('Any assignments due?');
+    assert.strictEqual(res.requiresIntegration, true);
+    assert.strictEqual(res.service, 'classroom');
+    assert.strictEqual(res.action, 'getUpcomingAssignments');
+  });
+
+  await test('STT Component file is syntactically valid and properly exports VoxaSTT', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const sttCode = fs.readFileSync(path.join(__dirname, '../client/components/stt.js'), 'utf8');
+    assert(sttCode.includes('class VoxaSTT'), 'VoxaSTT class declaration missing');
+    assert(sttCode.includes('runDiagnostics'), 'runDiagnostics method missing');
+    assert(sttCode.includes('window.VoxaSTT = VoxaSTT;'), 'VoxaSTT window export missing');
+  });
+
   // ── Summary ───────────────────────────────────────────────────────────────
   console.log('\n═══════════════════════════════════════════════════════════════');
   console.log(`  Tests Complete: ${passed} Passed, ${failed} Failed`);

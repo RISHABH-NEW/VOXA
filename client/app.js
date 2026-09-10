@@ -72,6 +72,10 @@
     metricStopLatest: $('#metricStopLatest'),
     timelineContainer: $('#timelineContainer'),
     sttStatus: $('#sttStatus'),
+    micStatus: $('#micStatus'),
+    recognitionStatus: $('#recognitionStatus'),
+    lastErrorStatus: $('#lastErrorStatus'),
+    browserStatus: $('#browserStatus'),
     llmStatus: $('#llmStatus'),
     rimeStatus: $('#rimeStatus'),
     modeStatus: $('#modeStatus'),
@@ -152,12 +156,35 @@
     }
   }
 
-  function updateSystemStatus(services) {
+  async function updateSystemStatus(services) {
+    // STT Diagnostic Check
+    const diag = await stt.runDiagnostics();
+
     // STT
     if (stt.isSupported) {
       updateStatusEl(els.sttStatus, '✓ Ready', 'ok');
     } else {
       updateStatusEl(els.sttStatus, '✕ Unsupported', 'fail');
+    }
+
+    // Diagnostics for Hackathon / Developer Demo Mode
+    if (els.micStatus) {
+      const isGranted = diag.microphonePermission === 'GRANTED';
+      const isDenied = diag.microphonePermission === 'DENIED';
+      updateStatusEl(els.micStatus, diag.microphonePermission, isGranted ? 'ok' : (isDenied ? 'fail' : 'warn'));
+    }
+
+    if (els.recognitionStatus) {
+      const isReady = diag.recognitionStatus === 'READY' || diag.recognitionStatus === 'LISTENING';
+      updateStatusEl(els.recognitionStatus, diag.recognitionStatus, isReady ? 'ok' : 'fail');
+    }
+
+    if (els.lastErrorStatus) {
+      updateStatusEl(els.lastErrorStatus, diag.lastSTTError, diag.lastSTTError === 'None' ? 'ok' : 'warn');
+    }
+
+    if (els.browserStatus) {
+      updateStatusEl(els.browserStatus, diag.browser, 'ok');
     }
 
     // LLM
@@ -354,7 +381,7 @@
   // VOICE SESSION MANAGEMENT
   // ══════════════════════════════════════════════════════════════════════════
 
-  function startSession() {
+  async function startSession() {
     if (sessionActive) {
       stopSession();
       return;
@@ -364,11 +391,10 @@
     metrics.startSession();
     setVoiceState('LISTENING');
 
-    // Start STT
-    const started = stt.start();
+    // Start STT with full async check
+    const started = await stt.start();
     if (!started) {
-      showError('Could not start voice recognition. Check your browser and microphone.');
-      setVoiceState('ERROR', 'Microphone unavailable');
+      setVoiceState('ERROR', 'Voice recognition unavailable');
       sessionActive = false;
       return;
     }
@@ -708,11 +734,27 @@
     processUserMessage(transcript);
   };
 
-  stt.onError = ({ message, isFatal }) => {
+  stt.onError = ({ error, message, isFatal }) => {
     showError(message);
+    if (els.interimTranscript) {
+      els.interimTranscript.hidden = true;
+      els.interimText.textContent = '';
+    }
+    if (els.lastErrorStatus) {
+      updateStatusEl(els.lastErrorStatus, error || 'error', 'warn');
+    }
+    if (els.recognitionStatus) {
+      updateStatusEl(els.recognitionStatus, isFatal ? 'FAILED' : 'RETRYING', isFatal ? 'fail' : 'warn');
+    }
     if (isFatal) {
       setVoiceState('ERROR', message);
       sessionActive = false;
+    }
+  };
+
+  stt.onStateChange = ({ listening }) => {
+    if (els.recognitionStatus) {
+      updateStatusEl(els.recognitionStatus, listening ? 'LISTENING' : 'IDLE', listening ? 'ok' : '');
     }
   };
 
@@ -1278,6 +1320,10 @@
       'background: #6366f1; color: white; padding: 4px 8px; border-radius: 4px 0 0 4px; font-weight: bold;',
       'background: #1a1a28; color: #22d3ee; padding: 4px 8px; border-radius: 0 4px 4px 0;'
     );
+
+    // Expose diagnostic helpers on window for development and verification
+    window.voxaSTT = stt;
+    window.voxaRunDiagnostics = () => stt.runDiagnostics();
 
     // Apply saved or default UI mode
     applyMode(isDemoMode);
